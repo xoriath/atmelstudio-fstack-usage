@@ -12,7 +12,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -53,7 +54,8 @@
   <ItemGroup>
     <Compile Include="FunctionStackInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StackAnalysisCommand.cs" />
+    <Compile Include="SolutionEvent.cs" />
+    <Compile Include="SolutionEventsListener.cs" />
     <Compile Include="StackAnalysisToolWindow.cs" />
     <Compile Include="StackAnalysisToolWindowCommand.cs" />
     <Compile Include="StackAnalysisToolWindowControl.xaml.cs">
@@ -63,7 +65,6 @@
     <Compile Include="SuFileParser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -177,7 +178,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\StackAnalysisCommand.png" />
     <Content Include="Resources\StackAnalysisToolWindowCommand.png" />
     <Content Include="Resources\StackUsageAnalyzerPackage.ico" />
     <VSCTCompile Include="StackUsageAnalyzerPackage.vsct">
