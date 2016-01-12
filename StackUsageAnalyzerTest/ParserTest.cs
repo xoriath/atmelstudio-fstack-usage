@@ -13,9 +13,7 @@ namespace StackUsageAnalyzerTest
         [TestMethod]
         public void TestParserEmpty()
         {
-            var parser = new SuFileParser();
-
-            var result = parser.Parse(new List<string>());
+            var result = SuFileParser.Parse(new List<string>());
 
             Assert.IsFalse(result.Any());
         }
@@ -23,9 +21,7 @@ namespace StackUsageAnalyzerTest
         [TestMethod]
         public void TestParserSingleLineStatic()
         {
-            var parser = new SuFileParser();
-
-            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  static" }).ToList();
+            var result = SuFileParser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  static" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
@@ -42,9 +38,7 @@ namespace StackUsageAnalyzerTest
         [TestMethod]
         public void TestParserSingleLineDynamic()
         {
-            var parser = new SuFileParser();
-
-            var result = parser.Parse(new List<string>() { "usart_serial.h:73:42:usart_serial_getchar 9854  dynamic" }).ToList();
+            var result = SuFileParser.Parse(new List<string>() { "usart_serial.h:73:42:usart_serial_getchar 9854  dynamic" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
@@ -61,9 +55,7 @@ namespace StackUsageAnalyzerTest
         [TestMethod]
         public void TestParserSingleLineDynamicBounded()
         {
-            var parser = new SuFileParser();
-
-            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
+            var result = SuFileParser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
@@ -78,13 +70,26 @@ namespace StackUsageAnalyzerTest
         }
 
         [TestMethod]
+        public void TestParserManyLines()
+        {
+            var data = new List<string>();
+            data.AddRange(TestData.board_init.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
+            data.AddRange(TestData.events.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
+            data.AddRange(TestData.interrupt_sam_nvic.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
+            data.AddRange(TestData.osc8_calib.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
+
+            var result = SuFileParser.Parse(data).ToList();
+
+            Assert.AreEqual(21, result.Count());
+        }
+
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestParserSingleLineMalformed()
         {
-            var parser = new SuFileParser();
-
             // Need ToList for this to throw
-            var res = parser.Parse(new List<string>() { "usart_serial.h:10a:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
+            var res = SuFileParser.Parse(new List<string>() { "usart_serial.h:10a:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
             
         }
 
@@ -92,10 +97,8 @@ namespace StackUsageAnalyzerTest
         [ExpectedException(typeof(OverflowException))]
         public void TestParserFieldOutOfRange()
         {
-            var parser = new SuFileParser();
-
             // Need ToList for this to throw
-            var res = parser.Parse(new List<string>() { "usart_serial.h:99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
+            var res = SuFileParser.Parse(new List<string>() { "usart_serial.h:99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
 
         }
     }

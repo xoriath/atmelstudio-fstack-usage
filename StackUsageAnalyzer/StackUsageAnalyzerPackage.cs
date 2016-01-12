@@ -50,8 +50,11 @@ namespace StackUsageAnalyzer
         protected override void Initialize()
         {
             base.Initialize();
+
+            SolutionEventsListener.Initialize(this);
+
             StackAnalysisToolWindowCommand.Initialize(this);
-            StackAnalysisCommand.Initialize(this);
+            
         }
 
         #endregion
