@@ -25,7 +25,7 @@ namespace StackUsageAnalyzerTest
         {
             var parser = new SuFileParser();
 
-            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  static" });
+            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  static" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
@@ -44,7 +44,7 @@ namespace StackUsageAnalyzerTest
         {
             var parser = new SuFileParser();
 
-            var result = parser.Parse(new List<string>() { "usart_serial.h:73:42:usart_serial_getchar 9854  dynamic" });
+            var result = parser.Parse(new List<string>() { "usart_serial.h:73:42:usart_serial_getchar 9854  dynamic" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
@@ -63,7 +63,7 @@ namespace StackUsageAnalyzerTest
         {
             var parser = new SuFileParser();
 
-            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  dynamic,bounded" });
+            var result = parser.Parse(new List<string>() { "usart_serial.h:106:20:usart_serial_getchar 24  dynamic,bounded" }).ToList();
 
             Assert.AreEqual(1, result.Count());
 
