@@ -39,12 +39,7 @@ namespace StackUsageAnalyzer
         {
             TryNavigateFromRow(sender, e);
         }
-
-        private void DataGrid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            TryNavigateFromRow(sender, e);
-        }
-
+        
         private void TryNavigateFromRow(object sender, RoutedEventArgs e)
         {
             var row = ItemsControl.ContainerFromElement(sender as DataGrid, e.OriginalSource as DependencyObject) as DataGridRow;
@@ -55,11 +50,26 @@ namespace StackUsageAnalyzer
             var function = row.Item as FunctionStackInfo;
             if (function == null)
                 return;
-            
+
+
+            Navigate(function);
+        }
+
+        private static void Navigate(FunctionStackInfo function)
+        {
+            if (function == null)
+                return;
+
             // The SU file uses line 1 indexed line and column, Atmel Studio uses 0 index
-            Atmel.Studio.Framework.FileOpenHelper.OpenFile(function.FullPath, 
-                function.Line == 0 ? 0 : function.Line - 1, 
-                function.Column == 0 ? 0 : function.Column - 1);
+            Atmel.Studio.Framework.FileOpenHelper.OpenFile(function.FullPath,
+                            function.Line == 0 ? 0 : function.Line - 1,
+                            function.Column == 0 ? 0 : function.Column - 1);
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Navigate((sender as DataGrid)?.SelectedItem as FunctionStackInfo);
+
         }
     }
 }

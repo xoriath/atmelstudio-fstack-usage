@@ -29,7 +29,7 @@
                   CanUserResizeRows="False"
                   CanUserSortColumns="True"
                   MouseDoubleClick="DataGrid_MouseDoubleClick"
-                  KeyDown="DataGrid_KeyDown">
+                  SelectionChanged="DataGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Function" Width="SizeToCells" MinWidth="75" IsReadOnly="True" Binding="{Binding Path=FunctionName}"/>
 
