@@ -6,9 +6,14 @@ namespace StackUsageAnalyzer
 
     public class SuFileParser
     {
+        public static IEnumerable<FunctionStackInfo> Parse(IEnumerable<LineInstance> input)
+        {
+            return input.Where(l => !string.IsNullOrEmpty(l.Line)).Select(FunctionStackInfo.Create);
+        }
+
         public static IEnumerable<FunctionStackInfo> Parse(IEnumerable<string> input)
         {
-            return input.Where(s => !string.IsNullOrEmpty(s)).Select(FunctionStackInfo.Create);
+            return input.Where(l => !string.IsNullOrEmpty(l)).Select(FunctionStackInfo.Create);
         }
     }
 }

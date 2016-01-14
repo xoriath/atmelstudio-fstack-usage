@@ -1,21 +1,19 @@
 ﻿namespace StackUsageAnalyzer
 {
     using System;
+    using System.IO;
     using System.Text.RegularExpressions;
 
     public class FunctionStackInfo
     {
-        public string File { get; private set; }
+        public string FullPath { get; private set; }
+        public string File => Path.GetFileName(FullPath);
+        public string Directory => Path.GetDirectoryName(FullPath);
         public uint Line { get; private set; }
         public uint Column { get; private set; }
         public string FunctionName { get; private set; }
         public uint Bytes { get; private set; }
         public Qualifier Qualifiers { get; private set; }
-
-        public FunctionStackInfo()
-        {
-            
-        }
 
         public static FunctionStackInfo Create(string file, string name, uint line, uint column, uint bytes, Qualifier qualifiers)
         {
@@ -23,16 +21,33 @@
                        {
                            Bytes = bytes,
                            Column = column,
-                           File = file,
+                            FullPath = file,
                            FunctionName = name,
                            Line = line,
                            Qualifiers = qualifiers
                        };
         }
 
+        public static FunctionStackInfo Create(LineInstance suFileLine)
+        {
+            if (!LineRegex.IsMatch(suFileLine.Line))
+                throw new ArgumentException($"Line '{ suFileLine }' does not match SU file line", nameof(suFileLine));
+
+            var matches = LineRegex.Match(suFileLine.Line);
+
+            var file = matches.Groups[1].Value;
+            var line = uint.Parse(matches.Groups[2].Value);
+            var column = uint.Parse(matches.Groups[3].Value);
+            var name = matches.Groups[4].Value;
+            var bytes = uint.Parse(matches.Groups[5].Value);
+            var qualifier = ParseQualifier(matches.Groups[6].Value.Trim());
+
+            return Create(Path.Combine(Path.GetDirectoryName(suFileLine.FileName), file).Replace("\\Debug\\", "\\"), name, line, column, bytes, qualifier);
+        }
+
         public static FunctionStackInfo Create(string suFileLine)
         {
-            
+
             if (!LineRegex.IsMatch(suFileLine))
                 throw new ArgumentException($"Line '{ suFileLine }' does not match SU file line", nameof(suFileLine));
 
@@ -47,7 +62,7 @@
 
             return Create(file, name, line, column, bytes, qualifier);
         }
-        
+
         public static Qualifier ParseQualifier(string q)
         {
             Qualifier qualifier = Qualifier.None;

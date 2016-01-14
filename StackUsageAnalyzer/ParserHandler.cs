@@ -19,15 +19,13 @@ namespace StackUsageAnalyzer
         public IEnumerable<FunctionStackInfo> Parse()
         {
             var files = ListFiles();
-            var info = SuFileParser.Parse(files.SelectMany(f => File.ReadLines(f)));
+            var info = SuFileParser.Parse(files.SelectMany(f => File.ReadLines(f).Select(l => new LineInstance() { Line = l, FileName = f })));
 
             Model.Items.Clear();
             foreach (var functionInfo in info)
                 Model.Items.Add(functionInfo);
 
             return info;
-
-
         }
 
         private IEnumerable<string> ListFiles()
