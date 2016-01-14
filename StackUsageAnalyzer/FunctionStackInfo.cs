@@ -1,10 +1,11 @@
 ﻿namespace StackUsageAnalyzer
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
 
-    public class FunctionStackInfo
+    public class FunctionStackInfo : IFunctionStackInfo
     {
         public string FullPath { get; private set; }
         public string File => Path.GetFileName(FullPath);

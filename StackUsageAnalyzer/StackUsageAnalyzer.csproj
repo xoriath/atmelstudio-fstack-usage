@@ -59,8 +59,10 @@
     <Compile Include="FunctionStackInfo.cs" />
     <Compile Include="FunctionStackInfoQualifierToStringConverter.cs" />
     <Compile Include="LineInstance.cs" />
+    <Compile Include="ParseResultRecorder.cs" />
     <Compile Include="ParserHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FunctionStackUsageService.cs" />
     <Compile Include="SolutionEvent.cs" />
     <Compile Include="SolutionEventsListener.cs" />
     <Compile Include="StackAnalysisToolWindow.cs" />

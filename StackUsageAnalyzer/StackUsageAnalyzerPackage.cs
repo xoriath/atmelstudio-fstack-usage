@@ -10,6 +10,7 @@ namespace StackUsageAnalyzer
     using System.Runtime.InteropServices;
 
     using Microsoft.VisualStudio.Shell;
+    using System.ComponentModel.Design;
 
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -34,6 +35,7 @@ namespace StackUsageAnalyzer
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(StackAnalysisToolWindow))]
+    [ProvideService(typeof(SFunctionStackUsageService))]
     public sealed class StackUsageAnalyzerPackage : Package
     {
         /// <summary>
@@ -53,9 +55,28 @@ namespace StackUsageAnalyzer
 
             SolutionEventsListener.Initialize(this);
             ToolchainHelper.Initialize(this);
+            ParseResultRecorder.Initialize(this);
 
             StackAnalysisToolWindowCommand.Initialize(this);
             
+        }
+
+        public StackUsageAnalyzerPackage()
+        {
+            IServiceContainer serviceContainer = this;
+
+            serviceContainer.AddService(typeof(SFunctionStackUsageService), CreateService, true);
+        }
+
+        private object CreateService(IServiceContainer container, System.Type serviceType)
+        {
+            if (container != this)
+                return null;
+
+            if (typeof(SFunctionStackUsageService).IsEquivalentTo(serviceType))
+                return new FunctionStackUsageService(this);
+
+            return null;
         }
 
         #endregion
