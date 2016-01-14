@@ -9,6 +9,15 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <local:BytesToStringConverter x:Key="BytesToStringConverter"/>
+            <local:FunctionStackInfoQualifierToStringConverter x:Key="FunctionStackInfoQualifierToStringConverter"/>
+            <local:FunctionStackInfoQualifierToTooltipStringConverter x:Key="FunctionStackInfoQualifierToTooltipStringConverter"/>
+            <local:FunctionStackInfoQualifierIsDynamicConverter x:Key="FunctionStackInfoQualifierIsDynamicConverter"/>
+            <local:FunctionStackInfoQualifierIsDynamicAnBoundedConverter x:Key="FunctionStackInfoQualifierIsDynamicAnBoundedConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
@@ -31,10 +40,43 @@
                   MouseDoubleClick="DataGrid_MouseDoubleClick"
                   SelectionChanged="DataGrid_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Function" Width="SizeToCells" MinWidth="75" IsReadOnly="True" Binding="{Binding Path=FunctionName}"/>
+                <DataGridTextColumn Header="Stack Usage"  Width="SizeToCells" MinWidth="75" IsReadOnly="True" 
+                                    Binding="{Binding Path=Bytes, Converter={StaticResource BytesToStringConverter}}"/>
+                
+                 <DataGridTextColumn Header="Function" Width="SizeToCells" MinWidth="75" IsReadOnly="True" 
+                                     Binding="{Binding Path=FunctionName}"/>
 
-                <DataGridTextColumn Header="File" Width="SizeToCells" MinWidth="75" IsReadOnly="True" Binding="{Binding Path=File}"/>
+                <DataGridTextColumn Header="Allocation" Width="SizeToCells" MinWidth="75" IsReadOnly="True" 
+                                     Binding="{Binding Path=Qualifiers, Converter={StaticResource FunctionStackInfoQualifierToStringConverter}}">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip" Value="{Binding Path=Qualifiers, Converter={StaticResource FunctionStackInfoQualifierToTooltipStringConverter}}"/>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                    
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="File" Width="SizeToCells" MinWidth="75" IsReadOnly="True" 
+                                    Binding="{Binding Path=File}">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip" Value="{Binding Path=FullPath}"/>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Qualifiers, Converter={StaticResource FunctionStackInfoQualifierIsDynamicConverter}}" Value="true">
+                            <Setter Property="Background" Value="Red"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=Qualifiers, Converter={StaticResource FunctionStackInfoQualifierIsDynamicAnBoundedConverter}}" Value="true">
+                            <Setter Property="Background" Value="Yellow"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
         </DataGrid>
     </DockPanel>
 </UserControl>

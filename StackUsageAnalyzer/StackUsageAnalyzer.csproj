@@ -55,7 +55,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BytesToStringConverter.cs" />
     <Compile Include="FunctionStackInfo.cs" />
+    <Compile Include="FunctionStackInfoQualifierToStringConverter.cs" />
     <Compile Include="LineInstance.cs" />
     <Compile Include="ParserHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
