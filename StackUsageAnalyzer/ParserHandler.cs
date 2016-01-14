@@ -22,7 +22,7 @@ namespace StackUsageAnalyzer
             var info = SuFileParser.Parse(files.SelectMany(f => File.ReadLines(f).Select(l => new LineInstance() { Line = l, FileName = f })));
 
             Model.Items.Clear();
-            foreach (var functionInfo in info)
+            foreach (var functionInfo in info.OrderBy(f => f.Bytes))
                 Model.Items.Add(functionInfo);
 
             return info;
