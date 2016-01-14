@@ -12,7 +12,7 @@
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}">
+                <CheckBox IsChecked="{Binding IsActive, Mode=TwoWay}" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked">
                     <TextBlock Text="Activate"/>
                 </CheckBox>
             </ToolBar>
@@ -27,11 +27,13 @@
                   CanUserDeleteRows="False"
                   CanUserResizeColumns="True"
                   CanUserResizeRows="False"
-                  CanUserSortColumns="True">
+                  CanUserSortColumns="True"
+                  MouseDoubleClick="DataGrid_MouseDoubleClick"
+                  KeyDown="DataGrid_KeyDown">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Function" Width="SizeToCells" IsReadOnly="True" Binding="{Binding Path=FunctionName}"/>
+                <DataGridTextColumn Header="Function" Width="SizeToCells" MinWidth="75" IsReadOnly="True" Binding="{Binding Path=FunctionName}"/>
 
-                <DataGridTextColumn Header="File" Width="SizeToCells" IsReadOnly="True" Binding="{Binding Path=File}"/>
+                <DataGridTextColumn Header="File" Width="SizeToCells" MinWidth="75" IsReadOnly="True" Binding="{Binding Path=File}"/>
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>

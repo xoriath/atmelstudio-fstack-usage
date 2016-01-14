@@ -52,6 +52,7 @@ namespace StackUsageAnalyzer
             base.Initialize();
 
             SolutionEventsListener.Initialize(this);
+            ToolchainHelper.Initialize(this);
 
             StackAnalysisToolWindowCommand.Initialize(this);
             

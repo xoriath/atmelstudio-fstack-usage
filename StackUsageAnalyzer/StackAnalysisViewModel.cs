@@ -13,17 +13,19 @@ namespace StackUsageAnalyzer
         }
 
         public static readonly DependencyProperty IsActiveProperty =
-            DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(StackAnalysisToolWindowControl), 
-                new FrameworkPropertyMetadata(new PropertyChangedCallback(OnIsActiveChanged)));
+            DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(StackAnalysisToolWindowControl),
+                new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsActiveChanged)));
 
         private static void OnIsActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var isActive = (bool?)e.NewValue;
+            // This does not seem to fire correctly :(
+            
+            //var isActive = (bool?)e.NewValue;
 
-            if (isActive.HasValue && isActive.Value == true)
-                SetToolchainOption();
-            else
-                UnsetToolchainOption();
+            //if (isActive.HasValue && isActive.Value == true)
+            //    SetToolchainOption();
+            //else
+            //    UnsetToolchainOption();
 
         }
 
@@ -34,7 +36,7 @@ namespace StackUsageAnalyzer
 
         private static void SetToolchainOption()
         {
-            //throw new NotImplementedException();
+            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "-fstack-usage");
         }
 
         public ObservableCollection<FunctionStackInfo> Items { get; private set; } = new ObservableCollection<FunctionStackInfo>();

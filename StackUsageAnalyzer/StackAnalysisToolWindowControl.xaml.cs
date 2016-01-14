@@ -24,5 +24,42 @@ namespace StackUsageAnalyzer
 
             this.DataContext = new StackAnalysisViewModel();
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "!!!!!!!!!!! CHECKED !!!!!!!!!!!!!");
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "!!!!!!!!!! UNCHECKED !!!!!!!!!!!!");
+        }
+
+        private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TryNavigateFromRow(sender, e);
+        }
+
+        private void DataGrid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            TryNavigateFromRow(sender, e);
+        }
+
+        private void TryNavigateFromRow(object sender, RoutedEventArgs e)
+        {
+            var row = ItemsControl.ContainerFromElement(sender as DataGrid, e.OriginalSource as DependencyObject) as DataGridRow;
+
+            if (row == null)
+                return;
+
+            var function = row.Item as FunctionStackInfo;
+            if (function == null)
+                return;
+            
+            // The SU file uses line 1 indexed line and column, Atmel Studio uses 0 index
+            Atmel.Studio.Framework.FileOpenHelper.OpenFile(function.FullPath, 
+                function.Line == 0 ? 0 : function.Line - 1, 
+                function.Column == 0 ? 0 : function.Column - 1);
+        }
     }
 }
