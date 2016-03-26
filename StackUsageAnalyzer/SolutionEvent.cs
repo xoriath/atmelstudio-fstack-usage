@@ -9,10 +9,14 @@ namespace StackUsageAnalyzer
     class SolutionBuildStartedEvent : EventArgs
     {
         public string ProjectName { get; set; }
+
+        public string ProjectFolder { get; set; }
     }
 
     class SolutionBuildFinishedEvent : EventArgs
     {
         public string ProjectName { get; set; }
+
+        public string ProjectFolder { get; set; }
     }
 }

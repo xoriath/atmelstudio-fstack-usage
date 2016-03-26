@@ -36,8 +36,6 @@ namespace StackUsageAnalyzer
         private void Listener_BuildStartedEvent(SolutionEventsListener sender, EventArgs e)
         {
             var args = e as SolutionBuildStartedEvent;
-            //var options = GetCommonOptions(args.ProjectName);
-            //SetCommonOption(args.ProjectName, options + " -fstack-usage");
         }
 
         private SolutionEventsListener listener;
@@ -59,45 +57,70 @@ namespace StackUsageAnalyzer
             return null;
         }
 
-        public string SetCommonOption(string projectName, string option)
+        private string GetActiveProjectName()
         {
-            var project = FindProject(projectName);
-            if (project == null)
-                return null;
+            if (Dte == null)
+                return string.Empty;
 
-            var properties = project.Properties;
-            var toolchainoptions = properties.Item("ToolchainOptions").Value as Atmel.Studio.Extensibility.Toolchain.ProjectToolchainOptions;
+            var projects = Dte.ActiveSolutionProjects as Array;
+            if (projects == null || projects.Length == 0)
+                return string.Empty;
 
-            if (toolchainoptions == null)
-                return null;
-
-            if (toolchainoptions.CCompiler != null)
-                return toolchainoptions.CCompiler.MiscellaneousSettings += $" { option }";
-            else if (toolchainoptions.CppCompiler != null)
-                return toolchainoptions.CppCompiler.MiscellaneousSettings += $" { option }";
-            else
-                return null;
+            return (projects.GetValue(0) as Project)?.Name;
+        }
+        
+        public void SetCommonOption(string option)     
+        {
+            SetCommonOption(GetActiveProjectName(), option);
         }
 
-
-            public string GetCommonOptions(string projectName)
+        public void SetCommonOption(string projectName, string option)
         {
             var project = FindProject(projectName);
             if (project == null)
-                return null;
+                return;
+
+            var properties = project.Properties;
+            var toolchainoptions = properties.Item("ToolchainOptions").Value as Atmel.Studio.Extensibility.Toolchain.ProjectToolchainOptions;
+            
+            if (toolchainoptions == null)
+                return;
+
+            if (toolchainoptions.CCompiler != null && !toolchainoptions.CCompiler.MiscellaneousSettings.Contains(option))
+                toolchainoptions.CCompiler.MiscellaneousSettings += $" { option }";
+            else if (toolchainoptions.CppCompiler != null && !toolchainoptions.CppCompiler.MiscellaneousSettings.Contains(option))
+                toolchainoptions.CppCompiler.MiscellaneousSettings += $" { option }";
+
+            (project.Object as IProjectHandle).SetPropertyForAllConfiguration(ProjectPropertyConstants.ToolchainSettings, toolchainoptions.ToString());
+
+            project.Save();
+        }
+
+        public void RemoveCommonOption(string option)
+        {
+            RemoveCommonOption(GetActiveProjectName(), option);
+        }
+
+        public void RemoveCommonOption(string projectName, string option)
+        {
+            var project = FindProject(projectName);
+            if (project == null)
+                return;
 
             var properties = project.Properties;
             var toolchainoptions = properties.Item("ToolchainOptions").Value as Atmel.Studio.Extensibility.Toolchain.ProjectToolchainOptions;
 
             if (toolchainoptions == null)
-                return null;
+                return;
 
-            if (toolchainoptions.CCompiler != null)
-                return toolchainoptions.CCompiler.MiscellaneousSettings;
-            else if (toolchainoptions.CppCompiler != null)
-                return toolchainoptions.CppCompiler.MiscellaneousSettings;
-            else
-                return null;
+            if (toolchainoptions.CCompiler != null && !toolchainoptions.CCompiler.MiscellaneousSettings.Contains(option))
+                toolchainoptions.CCompiler.MiscellaneousSettings.Replace(option, string.Empty);
+            else if (toolchainoptions.CppCompiler != null && !toolchainoptions.CppCompiler.MiscellaneousSettings.Contains(option))
+                toolchainoptions.CppCompiler.MiscellaneousSettings.Replace(option, string.Empty);
+
+            (project.Object as IProjectHandle).SetPropertyForAllConfiguration(ProjectPropertyConstants.ToolchainSettings, toolchainoptions.ToString());
+
+            project.Save();
         }
     }
 }

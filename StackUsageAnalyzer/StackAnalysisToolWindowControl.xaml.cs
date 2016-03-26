@@ -27,12 +27,12 @@ namespace StackUsageAnalyzer
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "!!!!!!!!!!! CHECKED !!!!!!!!!!!!!");
+            ToolchainHelper.Instance.SetCommonOption("-fstack-usage");
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "!!!!!!!!!! UNCHECKED !!!!!!!!!!!!");
+            ToolchainHelper.Instance.RemoveCommonOption("-fstack-usage");
         }
 
         private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

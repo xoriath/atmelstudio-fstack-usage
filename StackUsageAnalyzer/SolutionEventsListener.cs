@@ -2,10 +2,13 @@
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+using Atmel.Studio.Services;
+using System.ComponentModel.Composition;
+using System.IO;
 
 namespace StackUsageAnalyzer
 {
-    class SolutionEventsListener : IVsUpdateSolutionEvents2, IDisposable
+    class SolutionEventsListener : ATProjectListener, IVsUpdateSolutionEvents2, IDisposable
     {
         private SolutionEventsListener(Package package)
         {
@@ -25,6 +28,9 @@ namespace StackUsageAnalyzer
 
         public static void Initialize(Package package)
         {
+            if (Instance != null)
+                Instance.Dispose(false);
+
             Instance = new SolutionEventsListener(package);
 
             Instance.AdivseSolutionUpdates();
@@ -52,9 +58,10 @@ namespace StackUsageAnalyzer
         int IVsUpdateSolutionEvents2.UpdateProjectCfg_Begin(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, ref int pfCancel)
         {
             var name = GetNameProperty(pHierProj);
-                
+            var folder = GetProjectDirectoryProperty(pHierProj);
+
             if (!string.IsNullOrEmpty(name))
-                BuildStartedEvent(this, new SolutionBuildStartedEvent() { ProjectName = name });
+                BuildStartedEvent(this, new SolutionBuildStartedEvent() { ProjectName = name, ProjectFolder = folder });
 
             return VSConstants.S_OK;
         }
@@ -62,9 +69,10 @@ namespace StackUsageAnalyzer
         int IVsUpdateSolutionEvents2.UpdateProjectCfg_Done(IVsHierarchy pHierProj, IVsCfg pCfgProj, IVsCfg pCfgSln, uint dwAction, int fSuccess, int fCancel)
         {
             var name = GetNameProperty(pHierProj);
+            var folder = GetProjectDirectoryProperty(pHierProj);
                 
             if (!string.IsNullOrEmpty(name))
-                BuildFinishedEvent(this, new SolutionBuildFinishedEvent() { ProjectName = name });
+                BuildFinishedEvent(this, new SolutionBuildFinishedEvent() { ProjectName = name, ProjectFolder = folder });
 
             return VSConstants.S_OK;
         }
@@ -112,7 +120,16 @@ namespace StackUsageAnalyzer
         private string GetNameProperty(IVsHierarchy pHierProj)
         {
             object o;
-            pHierProj.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID.VSHPROPID_Name, out o);
+            if (pHierProj.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID.VSHPROPID_Name, out o) != VSConstants.S_OK)
+                return string.Empty;
+            return o as string;
+        }
+
+        private string GetProjectDirectoryProperty(IVsHierarchy pHierProj)
+        {
+            object o;
+            if (pHierProj.GetProperty((uint)VSConstants.VSITEMID.Root, (int)__VSHPROPID.VSHPROPID_ProjectDir, out o) != VSConstants.S_OK)
+                return string.Empty;
             return o as string;
         }
 
@@ -159,5 +176,9 @@ namespace StackUsageAnalyzer
         #endregion
 
 
+        public override void OnProjectCreated(ProjectCreatedEventArgs args)
+        {
+            base.OnProjectCreated(args);
+        }
     }
 }

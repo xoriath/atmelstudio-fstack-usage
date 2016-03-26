@@ -31,12 +31,12 @@ namespace StackUsageAnalyzer
 
         private static void UnsetToolchainOption()
         {
-            //throw new NotImplementedException();
+            ToolchainHelper.Instance.RemoveCommonOption("-fstack-usage");
         }
 
         private static void SetToolchainOption()
         {
-            ToolchainHelper.Instance.SetCommonOption("LEDflasher0", "-fstack-usage");
+            ToolchainHelper.Instance.SetCommonOption("-fstack-usage");
         }
 
         public ObservableCollection<FunctionStackInfo> Items { get; private set; } = new ObservableCollection<FunctionStackInfo>();
@@ -55,7 +55,8 @@ namespace StackUsageAnalyzer
                 return;
 
             var args = e as SolutionBuildFinishedEvent;
-            var handler = new ParserHandler() { Model = this, Project = args.ProjectName };
+
+            var handler = new ParserHandler(string.Empty) { Model = this, Folder = args.ProjectFolder };
             handler.Parse();
         }
     }
